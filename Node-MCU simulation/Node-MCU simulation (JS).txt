@@ -1,0 +1,96 @@
+var random_Air_Humidity = msg.payload[0].Air_Humidity;
+var random_Soil_Moisture = msg.payload[0].Soil_Moisture;
+var random_Soil_Temperature= msg.payload[0].Soil_Temperature;
+var random_Air_Temp = msg.payload[0].Air_Temperature;
+
+var Identification = msg.timestamp;
+var New_Message6;
+
+if(msg.payload){
+    
+    // generating the sensor values. Randomness added to the sensor deviation error.
+    // Gives a better approximation to the practical case scenario.
+    
+    random_Air_Temp  += (Math.random() * (0.5+0.5)-0.5);
+    random_Air_Humidity += (Math.random() * (2+2)-2);
+    random_Soil_Moisture += (Math.random() * (2+2)-2);
+    random_Soil_Temperature += (Math.random() * (0.5+0.5)-0.5);
+    // if conditions given below limits the range of the sensor data values.
+    
+    if(random_Air_Temp > 35){        //air temp. range
+        random_Air_Temp = 35.00;
+    }else if(random_Air_Temp <25){
+        random_Air_Temp = 25.00;
+    }
+    
+    if(random_Air_Humidity > 80){    //air hum. range
+        random_Air_Humidity = 80.00;
+    }else if(random_Air_Humidity <50){
+        random_Air_Humidity = 50.00;
+    }
+    
+    if(random_Soil_Moisture > 80){    //soil moist. range
+        random_Soil_Moisture = 80.00;
+    }else if(random_Soil_Moisture <50){
+        random_Soil_Moisture = 50.00;
+    }
+    
+    if(random_Soil_Temperature> 35){  //soil temp. range
+        random_Soil_Temperature = 35.00;
+    }else if(random_Soil_Temperature <25){
+        random_Soil_Temperature = 25.00;
+    }
+    
+    
+    random_Air_Temp  = random_Air_Temp.toFixed(2);
+    random_Air_Humidity = random_Air_Humidity.toFixed(2);
+    random_Soil_Moisture = random_Soil_Moisture.toFixed(2);
+    random_Soil_Temperature = random_Soil_Temperature.toFixed(2);
+}
+
+
+var New_Message2 = {"payload": random_Soil_Moisture};    var New_Message3 = {"payload": random_Air_Temp}; 
+var New_Message4 = {"payload": random_Air_Humidity};       var New_Message5 = {"payload": random_Soil_Temperature};
+
+msg.payload ="";
+
+
+//below if conditions check a current sensor value in a warning range.
+
+if(random_Air_Temp > 34){
+    msg.payload = "Warning! Air temperature too high : " +String(random_Air_Temp)+ "...";
+}
+if(random_Air_Humidity > 78){
+    msg.payload = msg.payload+"Warning! Air Humidity too high :" +String(random_Air_Humidity)+ "..."; 
+}
+if(random_Soil_Temperature> 34){
+    msg.payload = msg.payload+"Warning! Soil temperature too high : " +String(random_Soil_Temperature )+ "...";
+}
+if(random_Soil_Moisture > 78){
+    msg.payload = msg.payload+"Warning! Soil Moisture too high :" +String(random_Soil_Moisture)+ "..."; 
+}
+if(random_Air_Temp < 25.5){
+    msg.payload = msg.payload+"Warning! Air temperature too low : " +String(random_Air_Temp)+ "...";
+}
+if(random_Air_Humidity< 52){
+    msg.payload = msg.payload+"Warning! Air Humidity too low :" +String(random_Air_Humidity)+ "..."; 
+}
+if(random_Soil_Temperature < 25.5){
+    msg.payload = msg.payload+"Warning! Soil temperature too low : " +String(random_Soil_Temperature )+ "...";
+}
+if(random_Soil_Moisture< 52){
+    msg.payload = msg.payload+"Warning! Soil Moisture too low :" +String(random_Soil_Moisture)+ "..."; 
+}
+if (msg.payload === ""){
+    msg.payload = "Farm Environmental Condition Status : Normal";
+}
+
+//Setting up a command to insert the sensor data into the SQL database. Then later used for monitoring purposes
+var New_Message = {
+ "topic": "INSERT INTO "+global.get("current_db_name","file")+"(Air_Temperature, Air_Humidity, Soil_Moisture, Soil_Temperature, currentdate, Identification_code) values(" + random_Air_Temp + ", " + random_Air_Humidity + ", " + random_Soil_Moisture + ", " + random_Soil_Temperature + ", '" + msg.date + "', " + Identification + ")"
+}
+
+//transmitting data value to serveral nodes for storing and monitoring purposes.
+if (msg.payload){
+    return [ New_Message , New_Message2 , New_Message3 , New_Message4 , New_Message5, msg];
+}
