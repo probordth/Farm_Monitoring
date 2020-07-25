@@ -1,0 +1,22 @@
+//var chartdata = context.get("chartdata") || []
+var ob =[]
+var ob2 =[]
+var val = msg.payload.length ;
+var i;
+for (i=0 ; i<Number(val) ; i++){
+    ob[i] = {x:msg.payload[i].Identification_code, y:msg.payload[i].Soil_Temperature}
+    //chartdata.push(ob)
+}
+
+for (i=0 ; i<Number(val) ; i++){
+    ob2[i] = {x:msg.payload[i].Identification_code, y:msg.payload[i].Air_Temperature}
+    //chartdata.push(ob)
+}
+
+msg.payload = [{
+"series": ["Soil_Temperature","Air_Temperature"],
+"data": [ob,ob2],
+"labels": [""]
+}]
+
+return msg;
