@@ -1,0 +1,30 @@
+var i;
+var count = global.get("arraysize","file");
+var tab;
+var name
+
+if(msg.username==="admin"){
+    if(msg.password==="harshana"){
+        return[msg,null,null];
+    }else{
+        return[null,null,msg]; 
+    }
+}
+
+for(i=0 ; i< count ; i++){
+    
+    if(msg.username === global.get("user_name["+i+"]","file")){
+        if(msg.password===global.get("pass_word["+i+"]","file")){
+            name = "DB_"+String(msg.username);
+            global.set("current_db_name",name,"file");
+            tab = String(msg.username);
+            global.set("tabname",tab,"file");
+            global.set("data_status["+i+"]","running","file");
+            return[null,msg,null];
+        }else{
+            return[null,null,msg];
+        }
+    }
+}
+
+return [null,null,msg];
