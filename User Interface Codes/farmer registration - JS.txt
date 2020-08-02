@@ -13,12 +13,22 @@ if((msg.username==="")||(msg.password==="")||(msg.c_password==="")){
 }
 
 for(i = 0; i<global.get("pass_word","file").length; i++){
+    if(msg.username===String(global.get("user_name["+i+"]","file"))){
+     msg.payload = "Sorry! Username Already Taken";     
+     return [null,msg];       
+    }
+}
+
+
+for(i = 0; i<global.get("pass_word","file").length; i++){
     
     if((global.get("pass_word["+i+"]","file")===null)&&(global.get("user_name["+i+"]","file")===null)&&(global.get("user_db["+i+"]","file")===null)){
        global.set("user_name["+i+"]",msg.username,"file");
        global.set("pass_word["+i+"]",msg.password,"file");
        global.set("data_status["+i+"]","not active","file");
        global.set("user_db["+i+"]","DB_"+String(msg.username),"file");
+       global.set("user_device["+i+"]",msg.device,"file");
+       global.set("user_contact["+i+"]",msg.contact,"file");
        msg.payload = "Sucessfully registered to the IoT farm!";
        msg.dbname = "DB_"+String(msg.username);
        return [msg,null];
