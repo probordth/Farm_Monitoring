@@ -1,0 +1,16 @@
+var count = global.get("arraysize","file");
+var publishedtopic = String(msg.topic);
+var checkdevice;
+var i;
+
+//simple for-loop to extract the user_name from the published topic (MQTT)
+
+for(i=0; i< Number(count) ;i++){
+    checkdevice = String(global.get("user_device["+i+"]","file"));
+    if((publishedtopic.includes(checkdevice))===true){  //string manipulation
+        msg.payload=String(global.get("user_name["+i+"]","file"));
+        return[msg,null];
+    }
+}
+msg.payload = "Not found";
+return [null,msg];
