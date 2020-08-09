@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <style>
+        body {background-color:AliceBlue;}
+        h1 {font-size:60px; color:Indigo; text-align:center;border:5px solid Blue;background-color:Cyan}
+        #intro {font-size:20px; color:Indigo;}
+        #form1 {text-align: center;border:5px solid Blue}
+        #date {text-align:right}
+            
+        @media only screen and (max-width:800px) {
+        /* For tablets: */
+        .main {
+            width: 80%;
+            padding: 0;
+        }
+        .right {
+             width: 100%;
+            }
+        }
+        @media only screen and (max-width:500px) {
+        /* For mobile phones: */
+        .menu, .main, .right {
+             width: 100%;
+            }
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Simple Live Display</title>
+    
+    <script type="text/javascript">
+        var ws;
+        var wsUri = "ws:";
+        var loc = window.location;
+        console.log(loc);
+        if (loc.protocol === "https:") { wsUri = "wss:"; }
+        // Needs to point to the web socket deployed in the Node-RED flow
+        // This case it's ws/farmer/issue
+        wsUri += "//" + loc.host + loc.pathname.replace("farmer/issue","ws/farmer/issue");
+        
+
+        function wsConnect() {
+            console.log("connect",wsUri);
+            ws = new WebSocket(wsUri);
+            //to get messages pushed from the server
+            ws.onmessage = function(msg) {
+                document.getElementById("date").innerHTML = msg.data;
+            }
+        }
+
+        function doit(m) {
+            if (ws) { ws.send(m); }
+        }
+        
+        function myFunction(){
+            document.getElementById("date").innerHTML = Date()
+        }
+        
+        function myFunction2(){
+            /*Function to get the form data and pass it to the server for processing*/
+            
+            //var Form_data = {username:"", device:"",Issue:""};
+            //Form_data.username = document.getElementById("username").value
+            //Form_data.device = document.getElementById("device").value
+            //Form_data.Issue= document.getElementById("text").value
+            var Form_data = [String(document.getElementById("username").value), String(document.getElementById("device").value) , String(document.getElementById("text").value)];
+            doit(Form_data);
+        }
+    </script>
+    
+    </head>
+    <body onload="wsConnect();" onunload="ws.disconnect();">
+        <font face="Arial">
+        <h1><b>IoT Based Monitoring System</b></h1>
+        
+        <!-- web page top photo -->
+        <!--  <img src="http://127.0.0.1:1880/farm2.png" width="1500" height="200"> -->
+        
+        <!-- Description -->
+        <header>
+        <p id="intro">
+        This webpage is designed to exchange some messages which may include issues, errors, help etc. Every message 
+        posted through this webpage is intended to reach the admins of the system. When logged as  an admin, the
+        messages sent by the farmers can be viewed and tracked.
+        </p>
+        <h2>Way to submit the Inquiry</h2>
+        <p><b>Given below is a form that the farming community can use. Include your <mark>registered Username</mark> and your <mark>Device ID</mark></b></p>
+        </header>  
+        
+        
+        <!-- button to get Date -->  
+        <button type="button" onclick="myFunction()">Click to get the Date</button>
+        <p id="date">Date Field</p>
+        
+        <form id="form1">
+            <br><label for="username"><b>Enter Registered Username:</b></label><br>
+            <input type="text" id="username" name="username" required size="50"><br><br>
+            <label for="device"><b>Enter Device No:</b></label><br>
+            <input type="text" id="device" name="device" required size="50"><br><br>
+            <label for="text"><b>Type your issue in the below box:</b></label><br>
+            <textarea id="text" name="text" rows="20" cols="50" required></textarea><br><br>
+            <!-- <input type="submit" value="submit"> -->
+            <button type="button" onclick="myFunction2()">Submit Issue</button>
+            <input type="reset"><br><br>
+        </form>
+
+        </font>
+    </body>
+</html>
