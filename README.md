@@ -26,6 +26,8 @@ A Small Note : The farmer capacity within the system can be increased according 
 
 
 
+
+
 #### 1.2 Database
 
 The sensor data are stored in a Database (SQLite) for monitoring purposes. The way this works is that using SQL commans in JS, the sensor data values are updated in the UI and database simultaneously. 
@@ -33,6 +35,15 @@ The sensor data are stored in a Database (SQLite) for monitoring purposes. The w
 Likewise, if we need to extract stored sensor data from the database, for some useful work (e.g to view the sensor data history) we use SQL commands in JS to extract the necessary details.
 
 **The system is programmed in a way that every registered farmer will have his own database table. To differentiate between the farmers, each table in the database is created using a unique ID for each farmer.**
+
+
+
+#### 1.3 Webpage for Farmer Issue
+
+This part was newly added. If a farmer needs some help from an administrator regarding some issues the farmer faced, he/she can use this webpage to post out the specific issue. The admin can give a solution or any comments regarding to that specific issue.
+
+**When posting an issue, the farmer will have to provide his/her details. This is to make sure that the issues are posted by registered farmers**
+
 
 
 
