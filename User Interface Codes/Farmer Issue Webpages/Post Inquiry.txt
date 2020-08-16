@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        
+    <style>
+        body {background-color:AliceBlue;}
+        #heading {font-size:40px; color:Indigo;}
+        #sub_heading {font-size:20px;text-decoration: underline;}
+        #basic {font-size:18px;}
+        #intro {font-size:20px; color:Indigo;}
+        #form1 {text-align: center;border:5px solid Blue}
+        #date {text-align:right}
+        #admin {float: right;}
+            
+        @media only screen and (max-width:800px) {
+        /* For tablets: */
+        .main {
+            width: 80%;
+            padding: 0;
+        }
+        .right {
+             width: 100%;
+            }
+        }
+        @media only screen and (max-width:500px) {
+        /* For mobile phones: */
+        .menu, .main, .right {
+             width: 100%;
+            }
+        }
+        
+        
+        .all-headings {
+            margin: 0;
+            padding: 5px;
+            background-color: lightgray;
+        }
+
+        .all-headings > h1, .heading {
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .heading {
+            background: white;
+        }
+
+        .heading > h2, p {
+             margin: 4px;
+             font-size: 90%;
+        }
+        
+        .in-line {
+            display: inline-block;
+            background-color: LightGreen;
+            border: none;
+            color: white;
+            margin: 4px 2px;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            opacity: 5;
+        }
+        .in-line:hover {opacity: 0.8}
+        .in-line2 {
+            display: inline-block;
+            background-color: INDIGO;
+            border: none;
+            color: white;
+            margin: 4px 2px;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .form{
+            background-color: Lavender;            
+        }
+        ::-webkit-input-placeholder { 
+            font-size: 15pt
+        }
+        ::-moz-placeholder { 
+            font-size: 15pt
+        }
+        :-ms-input-placeholder { 
+            font-size: 15pt
+        }
+        :-moz-placeholder { 
+            font-size: 15pt
+        }
+        
+    </style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inquiry</title>
+    
+    <script type="text/javascript">
+        var ws;
+        var wsUri = "ws:";
+        var loc = window.location;
+        console.log(loc);
+        if (loc.protocol === "https:") { wsUri = "wss:"; }
+        // Needs to point to the web socket deployed in the Node-RED flow
+        wsUri += "//" + loc.host + loc.pathname.replace("farmer/issue","ws/farmer/issue");
+        
+
+        function wsConnect() {
+            console.log("connect",wsUri);
+            ws = new WebSocket(wsUri);
+            //to get messages pushed from the server
+            
+            ws.onmessage = function(msg) {
+                
+                if (msg.data) {
+                    var obj = JSON.parse(msg.data);
+                    
+                    if (obj.id === "Login") {
+                        document.getElementById("date").innerHTML = obj.value;
+                    } 
+                    if (obj.id === "value1") {
+                        window.location.replace("/ui");
+                    } 
+                    if (obj.id === "value2") {
+                        document.getElementById("date2").innerHTML = obj.value;
+                    }
+                }
+            }
+        }
+
+        function doit(m) {
+            if (ws) { ws.send(m); }
+        }
+        
+        function myFunction(){
+            document.getElementById("date").innerHTML = Date()
+        }
+        
+        function myFunction2(){
+            /*Function to get the form data and pass it to the server for processing*/
+            
+            //var Form_data = {username:"", device:"",Issue:""};
+            //Form_data.username = document.getElementById("username").value
+            //Form_data.device = document.getElementById("device").value
+            //Form_data.Issue= document.getElementById("text").value
+            //var Form_data = [String(document.getElementById("username").value), String(document.getElementById("device").value) , String(document.getElementById("text").value)];
+            //var Form_data =document.getElementById("form1").value;
+            //doit(Form_data);
+        }
+        
+    </script>
+    
+    </head>
+    <body onload="wsConnect();" onunload="ws.disconnect();">
+        <font face="Arial">
+            
+        <!-- web page top photo -->
+        <!--  <img src="http://127.0.0.1:1880/farm2.png" width="1500" height="200"> -->
+
+        <article class="all-headings">
+            <h1 id="heading"><b>IoT Based Monitoring System</b></h1>
+            <article class="heading">
+                <h2 id="sub_heading">Introdution</h2><br>
+                <p id="basic">This webpage is designed to exchange some messages which may include issues, errors, help etc. Every message 
+                posted through this webpage is intended to reach the admins of the system. When logged as  an admin, the
+                messages sent by the farmers can be viewed and tracked.
+                </p>
+            </article>
+            <article class="heading">
+                <h2 id="sub_heading">Way to submit the Inquiry</h2><br>
+                <p id="basic">Given below is a form that the farming community can use. Include your <mark>registered Username</mark> and your <mark>Device ID.</mark></p>
+            </article>
+        </article>
+        
+        <!-- button to get Date -->  
+        <br><div>
+            <button class="in-line" type="button" onclick="myFunction()">Click to get the Date</button>
+            <a href="/display/inquiry" target="_blank">
+            <button class="in-line" id="admin" type="button">Check for Replies</button><br>
+            </a>
+        </div>
+        
+        <p id="date">Date Field</p>
+        
+        <form class="form" id="form1" action="/farmer/issue" method="post">
+            <!--br><label for="username"><b>Enter Registered Username:</b></label><br-->
+            <br><input style="height:30px;width:410px;font-size:14pt;" type="text" id="username" name="username" width="48" height="48" required size="50" placeholder="Enter your Username"><br><br>
+            <!--label for="device"><b>Enter Device No:</b></label><br-->
+            <input style="height:30px;width:410px;font-size:14pt;" type="text" id="device" name="device" width="48" height="48" required size="50" placeholder="Enter your Device Identfication Number"><br><br>
+            <!--label for="text"><b>Type your issue in the below box:</b></label><br-->
+            <textarea id="text" name="text" rows="20" cols="50" required placeholder="Type in your issue (Limit to 200 characters)"></textarea><br><br>
+            <!--button type="button" onclick="myFunction2()">Submit Issue</button-->
+            <input class="in-line2" type="submit" value="Submit Issue">
+            <input class="in-line2" type="reset" value="Clear"><br><br>
+        </form>
+        
+        </font>
+    </body>
+</html>
