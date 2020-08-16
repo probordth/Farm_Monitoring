@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <style>
+    #button1 {margin-left: 10px;float: left;}
+    #button2 {margin-right: 10px; float: right;}
+    body {background-color:AliceBlue;}    
+    table, th, td {
+        border: 2px solid black;
+        padding :5px;
+        border-spacing: 4px;
+    }
+
+    .important{
+        white-space :pre-line;
+    }
+    .in-line {
+        display: inline-block;
+        background-color: blue;
+        border: none;
+        color: white;
+        margin: 4px 2px;
+        width: 20%;
+        padding: 15px 32px;
+        text-align: center;
+        font-size: 18px;
+        opacity: 5;
+    }
+    .in-line:hover {opacity: 0.4}
+    </style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Display Inquiries</title>
+    
+    <script type="text/javascript">
+        var ws;
+        var wsUri = "ws:";
+        var loc = window.location;
+        console.log(loc);
+        if (loc.protocol === "https:") { wsUri = "wss:"; }
+        // Needs to point to the web socket deployed in the Node-RED flow
+        wsUri += "//" + loc.host + loc.pathname.replace("display/inquiry","ws/display/inquiry");
+        
+
+        function wsConnect() {
+            console.log("connect",wsUri);
+            ws = new WebSocket(wsUri);
+            //to get messages pushed from the server
+            
+            ws.onmessage = function(msg) {
+                
+                if (msg.data) {
+                    var obj = JSON.parse(msg.data);
+                    
+                    if (obj.id === "Login") {
+                        document.getElementById("date").innerHTML = obj.value;
+                    } 
+                    if (obj.id === "value1") {
+                        window.location.replace("/ui");
+                    } 
+                    if (obj.id === "value2") {
+                        document.getElementById("date2").innerHTML = obj.value;
+                    }
+                }
+      
+            }
+        }
+
+        function doit(m) {
+            if (ws) { ws.send(m); }
+        }
+        
+    </script>
+    </head>
+    <body>
+        <h1 id="heading" style = "text-align:center;font-size:40px">Inquiries Raised By The Farming Community.</h1>        
+        <div>
+            <a href="/ui/#!/3" target="_blank">
+            <button class="in-line" id="button1" type="button">Return to Dashboard</button>
+            </a>
+            <a href="/farmer/issue" target="_blank">
+            <button class="in-line" id="button2" type="button">New Inquiry</button><br><br>
+            </a>
+        </div><br><br>
+        
+
+        <table width=100%; border="1">
+            <tr>
+                <th style="background-color:#00FFFA;color:brown;font-size:18px">Inquiry ID.</th>
+                <th style="background-color:#00FFFA;color:brown;font-size:18px">Raised On</th>
+                <th style="background-color:#00FFFA;height:50px;color:brown;font-size:18px">Raised By</th> 
+                <th style="background-color:#00FFFA;color:brown;font-size:18px">Inquiry</th>
+                <th style="background-color:#00FFFA;color:brown;font-size:18px">Answer</th>
+                <th style="background-color:#00FFFA;color:brown;font-size:18px">Answered By</th>
+            </tr>
+            {{#payload}}
+             <tr>
+                <td width=4%;  style="background-color:#00FF50;font-size:18px">{{Inquiry_ID}}</td>
+                <td width=10%; style="background-color:#00FF50;font-size:18px">{{Inquiry_Date}}</td>
+                <td width=8%;  style="background-color:#00FF50;font-size:18px">{{Username}}</td>
+                <td class="important" width=35%; style="background-color:#00FF50;font-size:18px">{{Inquiry}}</td>
+                <td class="important" width=35%; style="background-color:#00FF50;font-size:18px">{{Answer}}</td>
+                <td width=8%;  style="background-color:#00FF50;font-size:18px">{{Expert_Name}}</td>
+            </tr>
+    {{/payload}}
+        </table>
+    </body>
+
+</html>
